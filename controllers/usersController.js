@@ -1,7 +1,7 @@
 var User = require('../models/user');
 const { body, validationResult } = require('express-validator');
 
-exports.signup_get = function (req, res, next) {
+exports.signup_get = function (req, res) {
     res.render('users/signup', { title: 'Sign-Up' });
 }
 
@@ -15,15 +15,12 @@ exports.signup_post = [
         .withMessage('Username can contain only letters and numbers.')
         .bail()
         .escape()
-        .custom(async (value) => {
+        .custom(async function(value) {
             var existingUser = await User.exists({ username: value });
-            if(existingUser === true) {
-                return Promise.reject();
-            } else {
-                return Promise.resolve();
-            }
+            if (existingUser === true) return Promise.reject();
+            else return Promise.resolve();
         })
-        .withMessage('Username already taken.'),
+        .withMessage('Username is already taken.'),
 
     body('password')
         .isLength({ min: 3, max: 100 })
