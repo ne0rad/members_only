@@ -15,12 +15,13 @@ exports.signup_post = [
         .withMessage('Username can contain only letters and numbers.')
         .bail()
         .escape()
-        .custom((value) => {
-            User.exists({ username: value }, (err, result) => {
-                if (err) { return next(err) }
-                if (result) return false;
-                else return true;
-            })
+        .custom(async (value) => {
+            var existingUser = await User.exists({ username: value });
+            if(existingUser === true) {
+                return Promise.reject();
+            } else {
+                return Promise.resolve();
+            }
         })
         .withMessage('Username already taken.'),
 
@@ -45,7 +46,6 @@ exports.signup_post = [
 
         if (!errors.isEmpty()) {
             // got some errors, rerender sign up page with error messages
-            console.log(errors.array());
             res.render('users/signup', { title: 'Sign-Up', errors: errors.array(), username: req.body.username });
         } else {
             // all good, encrypt password and save to DB
@@ -67,5 +67,5 @@ exports.signup_post = [
 ];
 
 exports.login_get = function (req, res) {
-    res.render('users/login', {title: 'Log-in'});
+    res.render('users/login', { title: 'Log-in' });
 }
