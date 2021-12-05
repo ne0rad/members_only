@@ -2,10 +2,12 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
-  if user 
-    p welcome back !{user.username}
-  div
-      a(href="/users/signup") Sign-Up
-      br 
-      a(href="/users/login") Login
+  if user
+    h2 Welcome back, !{user.username}
+    div.mb-3
+      a.btn.btn-primary(href='users/logout') Logout
+  else
+    div.mb-3
+      a.btn.btn-primary(href="/users/signup") Sign-Up
+    div.mb-3
+      a.btn.btn-primary(href="/users/login") Login

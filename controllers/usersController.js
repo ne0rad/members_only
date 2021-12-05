@@ -2,14 +2,14 @@ var User = require('../models/user');
 const { body, validationResult } = require('express-validator');
 
 exports.signup_get = function (req, res) {
-    res.render('users/signup', { title: 'Sign-Up' });
+    res.render('signup', { title: 'Sign-Up' });
 }
 
 exports.signup_post = [
     body('username')
         .trim()
         .isLength({ min: 3, max: 100 })
-        .withMessage('Username length must be more than 3 symbols.')
+        .withMessage('Username length must be 3 symbols or more.')
         .bail()
         .isAlphanumeric()
         .withMessage('Username can contain only letters and numbers.')
@@ -24,7 +24,7 @@ exports.signup_post = [
 
     body('password')
         .isLength({ min: 3, max: 100 })
-        .withMessage('Password length must be more than 3 symbols.')
+        .withMessage('Password length must be 3 symbols or more.')
         .escape(),
 
     body('confirmpassword')
@@ -43,7 +43,7 @@ exports.signup_post = [
 
         if (!errors.isEmpty()) {
             // got some errors, rerender sign up page with error messages
-            res.render('users/signup', { title: 'Sign-Up', errors: errors.array(), username: req.body.username });
+            res.render('signup', { title: 'Sign-Up', errors: errors.array(), username: req.body.username });
         } else {
             // all good, encrypt password and save to DB
             var bcrypt = require('bcryptjs');
@@ -64,5 +64,5 @@ exports.signup_post = [
 ];
 
 exports.login_get = function (req, res) {
-    res.render('users/login', { title: 'Log-in' });
+    res.render('login', { title: 'Log-in' });
 }
