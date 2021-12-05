@@ -1,24 +1,22 @@
 extends layout
 
 block content 
-    div.container
+    h1!= title 
 
-        h1!= title 
+    if errors 
+        ul.list-group.list-group-flush 
+            each error in errors 
+                li.list-group-item.list-group-item-danger.my-1!= error.msg
 
-        if errors 
-            ul.list-group.list-group-flush 
-                each error in errors 
-                    li.list-group-item.list-group-item-danger.my-1!= error.msg
-
-        form(action="/users/signup", method="post")
-            div.mb-3
-                label.form-label(for="username") Username: 
-                input#username.form-control(type="text", name="username" value=(username ? username : '') required)
-            div.mb-3
-                label.form-label(for="password") Password: 
-                input#password.form-control(type="password", name="password" required)
-            div.mb-3
-                label.form-label(for="confirmpassword") Confirm Password: 
-                input#confirmpassword.form-control(type="password", name="confirmpassword" required)
-            div.mb-3
-                input.btn.btn-primary(type="submit", value="Submit")
+    form(action="/users/signup" method="post")
+        div.mb-3
+            label.form-label(for="username") Username: 
+            input#username.form-control(type="text" name="username" value=(username ? username : '') required)
+        div.mb-3
+            label.form-label(for="password") Password: 
+            input#password.form-control(type="password" name="password" required)
+        div.mb-3
+            label.form-label(for="confirmpassword") Confirm Password: 
+            input#confirmpassword.form-control(type="password" name="confirmpassword" required)
+        div.mb-3
+            input.btn.btn-primary(type="submit" value="Sign-Up")
