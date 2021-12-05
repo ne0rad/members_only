@@ -36,7 +36,7 @@ exports.signup_post = [
             if (value === req.body.password) return true;
             else return false;
         })
-        .withMessage('Passwords must match.'),
+        .withMessage('Passwords doesn\'t match.'),
 
     (req, res, next) => {
         const errors = validationResult(req);
