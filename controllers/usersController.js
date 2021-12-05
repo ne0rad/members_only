@@ -56,7 +56,10 @@ exports.signup_post = [
                         password: hash
                     });
                     user.save();
-                    res.redirect('/');
+                    req.login({username: user.username, password: user.password}, function(err) {
+                        if (err) { return next(err); }
+                        return res.redirect('/');
+                      });
                 });
             });
         }
@@ -64,5 +67,5 @@ exports.signup_post = [
 ];
 
 exports.login_get = function (req, res) {
-    res.render('login', { title: 'Log-in' });
+    res.render('login', { title: 'Log-In' });
 }
