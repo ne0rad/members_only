@@ -1,5 +1,34 @@
 var User = require('../models/user');
+var passport = require('passport');
 const { body, validationResult } = require('express-validator');
+
+exports.index_get = function (req, res, next) {
+    res.render('index', { title: 'Members Only', user: req.user });
+}
+
+exports.login_get = function (req, res) {
+    res.render('login', { title: 'Log-In' });
+}
+
+exports.login_post = function (req, res, next) {
+    passport.authenticate('local', function (err, user) {
+        if (err) return next(err);
+        if (!user) return res.render('login', {
+            title: 'Log-In',
+            username: req.body.username,
+            errors: [{ msg: 'Invalid username/password combination' }]
+        });
+        req.login(user, function (err) {
+            if (err) return next(err);
+            return res.redirect('/');
+        })
+    })(req, res, next);
+}
+
+exports.logout_get = function (req, res) {
+    req.logout();
+    res.redirect('/');
+}
 
 exports.signup_get = function (req, res) {
     res.render('signup', { title: 'Sign-Up' });
@@ -12,10 +41,10 @@ exports.signup_post = [
         .withMessage('Username length must be 3 symbols or more.')
         .bail()
         .isAlphanumeric()
-        .withMessage('Username can contain only letters and numbers.')
+        .withMessage('Username can only contain letters and numbers.')
         .bail()
         .escape()
-        .custom(async function(value) {
+        .custom(async function (value) {
             var existingUser = await User.exists({ username: value });
             if (existingUser === true) return Promise.reject();
             else return Promise.resolve();
@@ -36,7 +65,7 @@ exports.signup_post = [
             if (value === req.body.password) return true;
             else return false;
         })
-        .withMessage('Passwords doesn\'t match.'),
+        .withMessage('Password confirmation doesn\'t match.'),
 
     (req, res, next) => {
         const errors = validationResult(req);
@@ -56,16 +85,26 @@ exports.signup_post = [
                         password: hash
                     });
                     user.save();
-                    req.login({username: user.username, password: user.password}, function(err) {
+                    req.login({ username: user.username, password: user.password }, function (err) {
                         if (err) { return next(err); }
                         return res.redirect('/');
-                      });
+                    });
                 });
             });
         }
     }
 ];
 
-exports.login_get = function (req, res) {
-    res.render('login', { title: 'Log-In' });
+exports.member_get = function (req, res, next) {
+    res.render('member', { title: 'Membership', user: req.user });
+}
+
+exports.require_user = function (req, res, next) {
+    if (!req.user) res.redirect('/');
+    else next();
+}
+
+exports.user_not_allowed = function (req, res, next) {
+    if (req.user) res.redirect('/')
+    else next();
 }

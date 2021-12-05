@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    div.row.wrap 
+        div.col-lg-4
+            h1= title
+            p Solve for x to unlock membership status.
+
+        div.col
+            blockquote.blockquote
+                p x = 2 + 3 * 2
+            form(action="/secret", method="post") 
+                div.mb-3 
+                    label.form-label(for="answer") Answer (x): 
+                    input#answer.form-control(type="number" name="answer" required)
+                div.mb-3 
+                    button.btn.btn-primary(type="submit") Submit
+
+        div.col-sm-2

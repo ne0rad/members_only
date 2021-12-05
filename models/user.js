@@ -8,7 +8,7 @@ var UserSchema = new Schema({
 
 UserSchema.virtual('url')
     .get(function () {
-        return 'users/user/' + this._id;
+        return 'user/' + this._id;
     });
 
 module.exports = mongoose.model('User', UserSchema, 'users');

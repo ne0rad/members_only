@@ -1,5 +1,38 @@
 extends layout
 
 block content
-  h1= title
-  
+  div.row.wrap 
+    if !user
+      div.col-lg-4
+        h1= title
+        p Please log-in or sign-up to participate.
+
+    div.col
+      if user
+        div.container-sm-1.my-4
+          a.btn.btn-outline-primary(href="/new") New Post
+          a.btn.btn-primary.mx-2(href="/") Refresh
+          span asdasd !{user.url} !{user._id}
+      else 
+        div.container-sm-1.my-4 
+          p Showing only last 5 posts. Please log-in or sign-up to see more.
+
+      -var n=0
+      while n<5
+        div.card.my-4
+          div.card-header Posted on 
+            span.fst-italic 
+              if user
+                | 05.12.2021 at 13:13
+              else
+                | ( members-only )
+          div.card-body 
+            blockquote.blockquote.mb-0
+              p This is a test message. Have a nice day!
+              footer.blockquote-footer
+                span.fst-italic
+                  if user 
+                    | Admin 
+                  else
+                    | ( members-only )
+          -n++
