@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    div.row.wrap 
+        div.col-lg-4
+            h1= title
+            p Information about this web app.
+
+        div.col
+            h4 Learned: 
+            ul.list-group
+                li.list-group-item User authentication 
+                li.list-group-item Sessions 
+                li.list-group-item BCrypt encryption 
+                li.list-group-item MongoDB Databases 
+
+            h4.mt-4 Technologies used: 
+            ul.list-group 
+                li.list-group-item NodeJS 
+                li.list-group-item Express 
+                li.list-group-item Pug (view)
+                li.list-group-item Bootstrap CSS
+                li.list-group-item MongoDB
+
+            h4.mt-4 GitHub Links: 
+            ul.list-group
+                li.list-group-item
+                    img.me-2(src="images/github.svg", alt="GitHub Logo" width="20px" height="20px")
+                    a.link-dark(href="https://github.com/ne0rad/members_only" target="_blank") Project Source
+                li.list-group-item
+                    img.me-2(src="images/github.svg", alt="GitHub Logo" width="20px" height="20px")
+                    a.link-dark(href="https://github.com/ne0rad" target="_blank") Profile (ne0rad)
+
+        div.col-sm-2 

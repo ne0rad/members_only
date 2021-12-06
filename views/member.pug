@@ -9,7 +9,12 @@ block content
         div.col
             blockquote.blockquote
                 p x = 2 + 3 * 2
-            form(action="/secret", method="post") 
+
+            if errors 
+                ul.list-group.list-group-flush 
+                    each error in errors 
+                        li.list-group-item.list-group-item-danger.my-1!= error.msg
+            form(action="/member", method="post") 
                 div.mb-3 
                     label.form-label(for="answer") Answer (x): 
                     input#answer.form-control(type="number" name="answer" required)

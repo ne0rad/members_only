@@ -3,7 +3,15 @@ var passport = require('passport');
 const { body, validationResult } = require('express-validator');
 
 exports.index_get = function (req, res, next) {
-    res.render('index', { title: 'Members Only', user: req.user });
+    if (req.user) {
+        User.findOne({ username: req.user.username })
+            .exec(function (err, userDB) {
+                if (err) return next(err);
+                res.render('index', { title: 'Members Only', user: req.user, isMember: userDB.isMember });
+            })
+    } else {
+        res.render('index', { title: 'Members Only' });
+    }
 }
 
 exports.login_get = function (req, res) {
@@ -82,7 +90,8 @@ exports.signup_post = [
                     if (err) return next(err);
                     var user = new User({
                         username: req.body.username,
-                        password: hash
+                        password: hash,
+                        isMember: false
                     });
                     user.save();
                     req.login({ username: user.username, password: user.password }, function (err) {
@@ -97,6 +106,35 @@ exports.signup_post = [
 
 exports.member_get = function (req, res, next) {
     res.render('member', { title: 'Membership', user: req.user });
+}
+
+exports.member_post = [
+    body('answer')
+        .isNumeric()
+        .withMessage('Answer must be a number.')
+        .bail()
+        .custom(value => {
+            if (value == 8) return true;
+            else return false;
+        })
+        .withMessage('Wrong answer.'),
+    function (req, res, next) {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            res.render('member', { title: 'Membership', errors: errors.array(), user: req.user });
+        } else {
+            User.updateOne({ username : req.user.username }, { isMember: true })
+                .exec(function (err) {
+                    if (err) return next(err);
+                    res.redirect('/');
+                })
+        }
+    }
+]
+
+exports.about_get = function(req, res, next) {
+    res.render('about', {title: 'About', user: req.user});
 }
 
 exports.require_user = function (req, res, next) {

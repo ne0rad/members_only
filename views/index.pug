@@ -9,12 +9,35 @@ block content
 
     div.col
       if user
-        div.container-sm-1.my-4
-          a.btn.btn-outline-primary(href="/new") New Post
-          a.btn.btn-primary.mx-2(href="/") Refresh
+        if isMember
+          div.container-sm-1.mb-4
+            button.btn.btn-outline-primary(type="button" data-bs-toggle="modal" data-bs-target="#postModal") New Post
+            a.btn.btn-primary.mx-2(href="/") Refresh
+
+          div.modal.fade(id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true")
+            div.modal-dialog
+              form(action="/new" method="post") 
+                div.modal-content 
+
+                  div.modal-header 
+                    h5.modal-title(id="postModalLabel") New post
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+
+                  div.modal-body 
+                    div.mb-3 
+                      label.col-form-label(for="message") Message: 
+                      textarea#message.form-control(name="message" required)
+
+                  div.modal-footer 
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close 
+                    button.btn.btn-primary(type="submit") Post
+
+        else 
+          div.container-sm-1.mb-4 
+            a.btn.btn-primary(href="/member") Become a Member
       else 
-        div.container-sm-1.my-4 
-          p Showing only last 5 posts. Please log-in or sign-up to see more.
+        div.container-sm-1.mb-4 
+          p Showing last 5 posts. More for Members Only.
 
       -var n=0
       while n<5
@@ -35,3 +58,5 @@ block content
                   else
                     | ( members-only )
           -n++
+
+

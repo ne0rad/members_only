@@ -15,5 +15,7 @@ router.get('/login', indexController.login_get);
 router.post('/login', indexController.login_post);
 router.get('/logout', indexController.logout_get);
 router.get('/member', indexController.member_get);
+router.post('/member', indexController.member_post);
+router.get('/about', indexController.about_get);
 
 module.exports = router;
