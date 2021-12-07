@@ -1,16 +1,33 @@
 var User = require('../models/user');
+var Post = require('../models/post');
 var passport = require('passport');
+var async = require('async');
 const { body, validationResult } = require('express-validator');
 
 exports.index_get = function (req, res, next) {
     if (req.user) {
-        User.findOne({ username: req.user.username })
-            .exec(function (err, userDB) {
-                if (err) return next(err);
-                res.render('index', { title: 'Members Only', user: req.user, isMember: userDB.isMember });
-            })
+        async.parallel({
+            userDB: function (callback) {
+                User.findOne({ username: req.user.username }, callback);
+            },
+            posts: function (callback) {
+                Post.find({})
+                    .sort({date: -1})
+                    .populate('author')
+                    .exec(callback);
+            }
+        }, function (err, results) {
+            if (err) return next(err);
+            res.render('index', { title: 'Members Only', user: req.user, isMember: results.userDB.isMember, posts: results.posts });
+        })
     } else {
-        res.render('index', { title: 'Members Only' });
+        Post.find({})
+            .sort({date: -1})
+            .limit(5)
+            .exec(function(err, posts){
+                if(err) return next(err);
+                res.render('index', { title: 'Members Only', posts: posts });
+            })
     }
 }
 
@@ -113,6 +130,7 @@ exports.member_post = [
         .isNumeric()
         .withMessage('Answer must be a number.')
         .bail()
+        .escape()
         .custom(value => {
             if (value == 8) return true;
             else return false;
@@ -124,7 +142,7 @@ exports.member_post = [
         if (!errors.isEmpty()) {
             res.render('member', { title: 'Membership', errors: errors.array(), user: req.user });
         } else {
-            User.updateOne({ username : req.user.username }, { isMember: true })
+            User.updateOne({ username: req.user.username }, { isMember: true })
                 .exec(function (err) {
                     if (err) return next(err);
                     res.redirect('/');
@@ -133,9 +151,41 @@ exports.member_post = [
     }
 ]
 
-exports.about_get = function(req, res, next) {
-    res.render('about', {title: 'About', user: req.user});
+exports.about_get = function (req, res, next) {
+    res.render('about', { title: 'About', user: req.user });
 }
+
+exports.new_post = [
+    body('message')
+        .trim()
+        .isLength({ min: 1, max: 1000 })
+        .withMessage('Message maximum length is 1000 symbols.')
+        .escape(),
+    function (req, res, next) {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            User.findOne({ username: req.user.username })
+                .exec(function (err, userDB) {
+                    if (err) return next(err);
+                    res.render('index', { title: 'Members Only', errors: errors.array(), message: req.body.message, user: req.user, isMember: userDB.isMember });
+                })
+        } else {
+            // Success, save post to DB
+            User.findOne({ username: req.user.username })
+                .exec(function (err, userDB) {
+                    if (err) return next(err);
+                    var post = new Post({
+                        author: userDB._id,
+                        message: req.body.message,
+                        date: new Date()
+                    });
+                    post.save();
+                    res.redirect('/');
+                })
+        }
+    }
+]
 
 exports.require_user = function (req, res, next) {
     if (!req.user) res.redirect('/');
