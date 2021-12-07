@@ -3,7 +3,7 @@ var router = express.Router();
 var indexController = require('../controllers/indexController');
 
 // Routes which need user to be logged-in
-router.use(['/member'], indexController.require_user);
+router.use(['/member', '/new'], indexController.require_user);
 
 // Routes where user not allowed if already logged-in
 router.use(['/signup', '/login'], indexController.user_not_allowed);
@@ -17,5 +17,6 @@ router.get('/logout', indexController.logout_get);
 router.get('/member', indexController.member_get);
 router.post('/member', indexController.member_post);
 router.get('/about', indexController.about_get);
+router.post('/new', indexController.new_post);
 
 module.exports = router;
