@@ -10,6 +10,10 @@ block content
     div.col
       if user
         if isMember
+          if errors 
+            ul.list-group.list-group-flush.mb-2
+              each error in errors 
+                li.list-group-item.list-group-item-danger.my-1!= error.msg
           div.container-sm-1.mb-4
             button.btn.btn-outline-primary(type="button" data-bs-toggle="modal" data-bs-target="#postModal") New Post
             a.btn.btn-primary.mx-2(href="/") Refresh
@@ -26,11 +30,11 @@ block content
                   div.modal-body 
                     div.mb-3 
                       label.col-form-label(for="message") Message: 
-                      textarea#message.form-control(name="message" required)
+                      textarea#message.form-control(name="message" maxlength="1000" required)
 
                   div.modal-footer 
                     button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close 
-                    button.btn.btn-primary(type="submit") Post
+                    button.btn.btn-primary(type="submit") Send
 
         else 
           div.container-sm-1.mb-4 
@@ -39,24 +43,22 @@ block content
         div.container-sm-1.mb-4 
           p Showing last 5 posts. More for Members Only.
 
-      -var n=0
-      while n<5
-        div.card.my-4
+      each post in posts
+        div.card.my-4.shadow
           div.card-header Posted on 
             span.fst-italic 
               if user
-                | 05.12.2021 at 13:13
+                | !{post.date.toLocaleDateString()} at !{post.date.toLocaleTimeString()}
               else
                 | ( members-only )
           div.card-body 
             blockquote.blockquote.mb-0
-              p This is a test message. Have a nice day!
+              p !{post.message}
               footer.blockquote-footer
                 span.fst-italic
                   if user 
-                    | Admin 
+                    | !{post.author.username}
                   else
                     | ( members-only )
-          -n++
 
 
