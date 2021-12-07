@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PostSchema = new Schema({
-    author: {type: Schema.Types.ObjectId, ref: 'User'},
+    author: { type: Schema.Types.ObjectId, ref: 'User' },
     message: { type: String, required: true, minlength: 1, maxlength: 1000 },
     date: { type: Date, required: true }
 });
