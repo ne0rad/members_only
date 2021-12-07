@@ -18,6 +18,7 @@ exports.index_get = function (req, res, next) {
             }
         }, function (err, results) {
             if (err) return next(err);
+            if(results === null) return next(new Error('Error getting DB items'));
             res.render('index', { title: 'Members Only', user: req.user, isMember: results.userDB.isMember, posts: results.posts });
         })
     } else {
